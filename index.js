@@ -3,9 +3,13 @@ const cors = require("cors");
 const { connection } = require("./database/connection");
 const routeArticle = require("./routes/article");
 
+require("dotenv").config();
+
+console.log(process.env.PORT);
+
 connection();
 
-const PORT = 3900;
+const PORT = process.env.PORT || 3900;
 const app = express();
 
 // Setup CORS
