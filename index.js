@@ -14,8 +14,11 @@ const app = express();
 
 // Setup CORS
 app.use(cors());
+
 // Parse body to json
 app.use(express.json());
+// For form encode
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", routeArticle);
 
