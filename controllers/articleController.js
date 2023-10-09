@@ -1,12 +1,6 @@
 const validator = require("validator");
 const Article = require("../models/Articles");
 
-const test = (req, res) => {
-  return res.status(200).json({
-    message: "Testing",
-  });
-};
-
 const createArticle = (req, res) => {
   let data = req.body;
   try {
@@ -49,12 +43,22 @@ const createArticle = (req, res) => {
   }
 };
 
-module.exports = {
-  test,
-  createArticle,
+const getArticles = async (req, res) => {
+  let articles = await Article.find({});
+  if (!articles) {
+    return res.status(404).json({
+      message: "No articles found",
+      error: "Not found",
+    });
+  }
+
+  return res.status(200).json({
+    message: "Success",
+    articles,
+  });
 };
 
-const data = {
-  title: "title",
-  content: "Content",
+module.exports = {
+  createArticle,
+  getArticles,
 };
