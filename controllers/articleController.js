@@ -64,7 +64,6 @@ const getArticleById = async (req, res) => {
   try {
     if (req.params?.articleId.length) {
       const articleId = new mongoose.Types.ObjectId(req.params.articleId);
-      console.log("articleId", articleId);
       let article = await Article.findById(articleId);
       if (!article) {
         return res.status(404).json({
@@ -90,8 +89,38 @@ const getArticleById = async (req, res) => {
   }
 };
 
+const deleteArticleById = async (req, res) => {
+  try {
+    if (req.params?.articleId.length) {
+      const articleId = new mongoose.Types.ObjectId(req.params.articleId);
+      let article = await Article.findOneAndDelete(articleId);
+      if (!article) {
+        return res.status(404).json({
+          message: "No article found",
+          error: "Not found",
+        });
+      }
+      return res.status(200).json({
+        message: "Article deleted successfully",
+        data: article,
+      });
+    } else {
+      return res.status(400).json({
+        message: "No articleId found",
+        error: "Params missing",
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      message: "ArticleId not valid",
+      error: "Params wrong",
+    });
+  }
+};
+
 module.exports = {
   createArticle,
   getArticles,
   getArticleById,
+  deleteArticleById,
 };
