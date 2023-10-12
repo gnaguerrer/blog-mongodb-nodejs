@@ -19,4 +19,4 @@ const ArticleSchema = Schema({
   },
 });
 
-module.exports = model("Article", ArticleSchema);
+module.exports = model("Article", ArticleSchema, "articles");
