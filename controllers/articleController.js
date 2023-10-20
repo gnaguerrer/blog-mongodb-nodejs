@@ -145,10 +145,18 @@ const updateArticle = async (req, res) => {
   }
 };
 
+const uplaodFile = async (req, res) => {
+  return res.status(200).json({
+    message: "Photo updated successfully",
+    data: req.file,
+  });
+};
+
 module.exports = {
   createArticle,
   getArticles,
   getArticleById,
   deleteArticleById,
   updateArticle,
+  uplaodFile,
 };
