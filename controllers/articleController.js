@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 const Article = require("../models/Article");
 const utils = require("../utils/validateArticle");
+const fs = require("fs");
 
 const createArticle = (req, res) => {
   let data = req.body;
   try {
     const isValidArticle = utils.validateArticle(data);
-    console.log("isValidArticle", isValidArticle);
     if (!isValidArticle) {
       return res.status(400).json({
         message: "Data is not valid",
@@ -104,11 +104,10 @@ const deleteArticleById = async (req, res) => {
 };
 
 const updateArticle = async (req, res) => {
-  try {
-    if (req.params?.articleId.length) {
+  if (req.params?.articleId.length) {
+    try {
       let updatedData = req.body;
       const isValidArticle = utils.validateArticle(updatedData);
-      console.log("isValidArticle", isValidArticle);
       if (!isValidArticle) {
         return res.status(400).json({
           message: "Data is not valid",
@@ -116,11 +115,14 @@ const updateArticle = async (req, res) => {
         });
       } else {
         const articleId = new mongoose.Types.ObjectId(req.params.articleId);
-        let article = await Article.findOneAndUpdate(articleId, updatedData, {
-          new: true,
-        });
-        console.log("article", article);
-        if (!article) {
+        let updatedArticle = await Article.findOneAndUpdate(
+          articleId,
+          updatedData,
+          {
+            new: true,
+          }
+        );
+        if (!updatedArticle) {
           return res.status(404).json({
             message: "No article found",
             error: "Not found",
@@ -128,28 +130,54 @@ const updateArticle = async (req, res) => {
         }
         return res.status(200).json({
           message: "Article updated successfully",
-          data: article,
+          data: updatedArticle,
         });
       }
-    } else {
+    } catch (error) {
       return res.status(400).json({
-        message: "No articleId found",
-        error: "Params missing",
+        message: "Article data not valid",
+        error: "Params wrong",
       });
     }
-  } catch (error) {
+  } else {
     return res.status(400).json({
-      message: "ArticleId not valid",
-      error: "Params wrong",
+      message: "No articleId found",
+      error: "Params missing",
     });
   }
 };
 
 const uplaodFile = async (req, res) => {
-  return res.status(200).json({
-    message: "Photo updated successfully",
-    data: req.file,
-  });
+  let file = req.file.originalname;
+  let splitted_file = file.split(".");
+  let ext = splitted_file[1];
+  if (ext !== "png" && ext != "jpg" && ext !== "jpeg" && ext !== "gif") {
+    fs.unlink(req.file.path, () => {
+      return res.status(400).json({
+        message: "Extension not valid",
+        error: "Image invalid",
+      });
+    });
+  } else {
+    const articleId = new mongoose.Types.ObjectId(req.params.articleId);
+    let updatedArticle = await Article.findOneAndUpdate(
+      articleId,
+      { image: req.file.filename },
+      {
+        new: true,
+      }
+    );
+    if (!updatedArticle) {
+      return res.status(404).json({
+        message: "No article found",
+        error: "Not found",
+      });
+    }
+    return res.status(200).json({
+      message: "Article updated successfully",
+      data: updatedArticle,
+    });
+  }
 };
 
 module.exports = {
