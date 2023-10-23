@@ -24,5 +24,6 @@ router.post(
   [uploadedImages.single("file")],
   ArticleContoller.uplaodFile
 );
+router.get("/image/:file", ArticleContoller.getImage);
 
 module.exports = router;

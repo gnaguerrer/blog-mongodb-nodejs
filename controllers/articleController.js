@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Article = require("../models/Article");
 const utils = require("../utils/validateArticle");
 const fs = require("fs");
+const path = require("path");
 
 const createArticle = (req, res) => {
   let data = req.body;
@@ -180,6 +181,22 @@ const uplaodFile = async (req, res) => {
   }
 };
 
+const getImage = (req, res) => {
+  let file = req.params.file;
+  let route = `./images/articles/${file}`;
+
+  fs.stat(route, (error, success) => {
+    if (success) {
+      return res.sendFile(path.resolve(route));
+    } else {
+      return res.status(400).json({
+        message: "Image doesn't exist",
+        error: "Not found",
+      });
+    }
+  });
+};
+
 module.exports = {
   createArticle,
   getArticles,
@@ -187,4 +204,5 @@ module.exports = {
   deleteArticleById,
   updateArticle,
   uplaodFile,
+  getImage,
 };
