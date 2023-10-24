@@ -25,5 +25,6 @@ router.post(
   ArticleContoller.uplaodFile
 );
 router.get("/image/:file", ArticleContoller.getImage);
+router.get("/search/:search", ArticleContoller.getSearch);
 
 module.exports = router;

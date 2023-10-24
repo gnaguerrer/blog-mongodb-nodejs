@@ -197,6 +197,29 @@ const getImage = (req, res) => {
   });
 };
 
+const getSearch = async (req, res) => {
+  try {
+    let search = req.params.search;
+    let articles = await Article.find({
+      $or: [
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } },
+      ],
+    })
+      .sort({ date: -1 })
+      .exec();
+    return res.status(200).json({
+      message: "Success",
+      data: articles,
+    });
+  } catch {
+    return res.status(400).json({
+      message: "Not match",
+      error: "Not found",
+    });
+  }
+};
+
 module.exports = {
   createArticle,
   getArticles,
@@ -205,4 +228,5 @@ module.exports = {
   updateArticle,
   uplaodFile,
   getImage,
+  getSearch,
 };
